@@ -1,0 +1,9 @@
+.monster{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+}
+
+.kikendo{
+    border: 1px solid black;
+}
