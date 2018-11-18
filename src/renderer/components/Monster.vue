@@ -28,14 +28,28 @@
       setJson(name,count){
         let setJson = [{'name':name,'count':count}];
         
-        const storage = require('electron-json-storage');
-
-        this.readJson(storage).
-          then(function(saveData){console.log(saveData)});
-
-        storage.set('config', setJson, function (error) {
-            if (error) throw error;
+        var Datastore = require('nedb');
+        var db = new Datastore({
+            filename: 'data/database.db',
+            autoload: true
         });
+
+         db.find({name:name}, (err, docs) => {
+                console.dir(docs);
+                console.dir(docs.length);
+                if(docs.length == 1){
+                  db.update({ name:name }, { $set: { count:count } }, {}, function(err, numReplaced){
+                      console.log(numReplaced);
+                  });
+                }else{
+                  db.insert(setJson, function(err) {
+
+                  });
+                }
+
+
+            }); 
+        
       },
       readJson (storage) {
         storage.get('config', function (error, data) {

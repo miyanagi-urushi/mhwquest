@@ -5,12 +5,14 @@
       <Monster v-for="monster in monsterList2"
       v-bind:name="monster.name"
       v-bind:HP="monster.HP"
-      v-bind:count="monster.count"/>
+      v-bind:count="monster.count"
+      :key="monster.name"/>
       <div class="kikendo">危険度3</div>
       <Monster v-for="monster in monsterList3"
       v-bind:name="monster.name"
       v-bind:HP="monster.HP"
-      v-bind:count="monster.count"/>
+      v-bind:count="monster.count"
+      :key="monster.name"/>
     </div>
   </div>
 </template>
@@ -122,19 +124,43 @@
         }
       ];
 
+      var Datastore = require('nedb');
+        var db = new Datastore({
+            filename: 'data/database.db',
+            autoload: true
+        });
+
+        db.find({}, function(err, docs){
+            //console.log(docs);
+            
+
+            for(let temp of MONSTERJSON){
+                var flag = true;
+                for(let dbtemp of docs){
+                    if(temp.name === dbtemp.name){
+                        if(temp.kikendo=="2"){
+                        monsterList2.push({name:temp.name,HP:Number(temp.HP),count:dbtemp.count});
+                        }else{
+                        monsterList3.push({name:temp.name,HP:Number(temp.HP),count:dbtemp.count});
+                        }
+                        flag = false;
+                        break;
+                    }
+                }
+                if(flag){
+                    if(temp.kikendo=="2"){
+                    monsterList2.push({name:temp.name,HP:Number(temp.HP),count:0});
+                    }else{
+                    monsterList3.push({name:temp.name,HP:Number(temp.HP),count:0});
+                    }
+                }
+                //console.log(temp.name);
+
+            }
+        });
       
-      const storage = require('electron-json-storage');
 
-      this.readJson(storage);
 
-      for(let temp of MONSTERJSON){
-        //console.log(temp.name);
-        if(temp.kikendo=="2"){
-          monsterList2.push({name:temp.name,HP:Number(temp.HP),count:0});
-        }else{
-          monsterList3.push({name:temp.name,HP:Number(temp.HP),count:0});
-        }
-      }
     }
   }
 </script>
